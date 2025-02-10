@@ -20,9 +20,6 @@ class CryptoRateResponse(BaseModel):
     data: CryptoRate
     timestamp: int = Field(..., description="The timestamp of the response in Unix time")
 
-class CryptoRateTool(BaseModel):
-    currency: str = Field(..., description="The currency id (e.g., 'bitcoin')")
-
 def get_crypto_rate(currency: str) -> CryptoRate:
     """Get the current exchange rate of a cryptocurrency."""
     url = f"https://api.coincap.io/v2/rates/{currency}"
@@ -103,7 +100,14 @@ def run_conversation(user_input: str) -> str:
                 function_args_dict = json.loads(function_args)
                 tool_name = tool_call["function"]["name"]
                 tool = available_tools[tool_name]
-                tool_response = tool(**function_args_dict)
+
+                try:
+                    tool_response = tool(**function_args_dict)
+                except Exception as e:
+                    print(f"Error calling tool: {tool_name}")
+                    print(f"Arguments: {function_args_dict}")
+                    print(e)
+                    continue
 
                 messages.append(
                     {
@@ -129,10 +133,6 @@ def run_conversation(user_input: str) -> str:
 
         return response_message["content"]
 
-# response_message = run_conversation("What is the current exchange rate of Bitcoin?")
-
-
-# print(response_message)
 
 if __name__ == "__main__":
     args = sys.argv[1:]

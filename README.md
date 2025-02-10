@@ -42,6 +42,7 @@ uv sync
 ```
 
 3. Create a `.env` file in the root directory with your Groq API key:
+
 ```bash
 cp .env.example .env
 ```
