@@ -1,7 +1,7 @@
 import json
 import os
 import sys
-from typing import List, Optional
+from typing import Optional
 import httpx
 from httpx._types import HeaderTypes, RequestData
 from dotenv import load_dotenv
