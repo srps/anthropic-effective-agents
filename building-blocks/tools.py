@@ -36,7 +36,7 @@ def get_crypto_rate(currency: str) -> CryptoRate:
 
 api_key = os.environ.get("GROQ_API_KEY")
 model = "llama-3.3-70b-versatile"
-url = f"https://api.groq.com/openai/v1/chat/completions"
+url = "https://api.groq.com/openai/v1/chat/completions"
 
 headers: HeaderTypes = {
     "Content-Type": "application/json",

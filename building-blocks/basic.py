@@ -9,7 +9,7 @@ load_dotenv()
 # We're also crafting the HTTP request instead of using the OpenAI library here for demonstration purposes.
 # We could also use OpenAI's library, passing Groq's URL and API key. Maybe I'll add that later.
 api_key = os.environ.get("GROQ_API_KEY")
-url = f"https://api.groq.com/openai/v1/chat/completions"
+url = "https://api.groq.com/openai/v1/chat/completions"
 
 headers: HeaderTypes = {
     "Content-Type": "application/json",

@@ -19,7 +19,7 @@ class Recipe(BaseModel):
 
 api_key = os.environ.get("GROQ_API_KEY")
 model = "deepseek-r1-distill-llama-70b"
-url = f"https://api.groq.com/openai/v1/chat/completions"
+url = "https://api.groq.com/openai/v1/chat/completions"
 
 headers: HeaderTypes = {
     "Content-Type": "application/json",
