@@ -9,16 +9,27 @@ from pydantic import BaseModel, Field
 
 load_dotenv()
 
+
 class CryptoRate(BaseModel):
-    id: str = Field(..., description="The unique identifier of the currency, e.g., 'bitcoin'")
+    id: str = Field(
+        ..., description="The unique identifier of the currency, e.g., 'bitcoin'"
+    )
     symbol: str = Field(..., description="The symbol of the currency, e.g., 'BTC'")
-    currencySymbol: Optional[str] = Field(..., description="The symbol of the currency, e.g., '₿'")
+    currencySymbol: Optional[str] = Field(
+        ..., description="The symbol of the currency, e.g., '₿'"
+    )
     type: str = Field(..., description="The type of the currency, e.g., 'crypto'")
-    rateUsd: float = Field(..., description="The current USD exchange rate of the currency")
+    rateUsd: float = Field(
+        ..., description="The current USD exchange rate of the currency"
+    )
+
 
 class CryptoRateResponse(BaseModel):
     data: CryptoRate
-    timestamp: int = Field(..., description="The timestamp of the response in Unix time")
+    timestamp: int = Field(
+        ..., description="The timestamp of the response in Unix time"
+    )
+
 
 def get_crypto_rate(currency: str) -> CryptoRate:
     """Get the current exchange rate of a cryptocurrency."""
@@ -34,6 +45,7 @@ def get_crypto_rate(currency: str) -> CryptoRate:
         rateUsd=data.get("rateUsd"),
     )
 
+
 api_key = os.environ.get("GROQ_API_KEY")
 model = "llama-3.3-70b-versatile"
 url = "https://api.groq.com/openai/v1/chat/completions"
@@ -43,14 +55,14 @@ headers: HeaderTypes = {
     "Authorization": f"Bearer {api_key}",
 }
 
+
 def run_conversation(user_input: str) -> str:
     messages = [
         {
-            "role": "system", "content": "You are an exchange rate assistant. Use the get_crypto_rate tool to get the current exchange rate of a currency."
+            "role": "system",
+            "content": "You are an exchange rate assistant. Use the get_crypto_rate tool to get the current exchange rate of a currency.",
         },
-        {
-            "role": "user", "content": user_input
-        }
+        {"role": "user", "content": user_input},
     ]
 
     tools = [
@@ -88,9 +100,7 @@ def run_conversation(user_input: str) -> str:
         response_message = response.json()["choices"][0]["message"]
         tool_calls = response_message["tool_calls"]
 
-        available_tools = {
-            get_crypto_rate.__name__: get_crypto_rate
-        }
+        available_tools = {get_crypto_rate.__name__: get_crypto_rate}
 
         if tool_calls:
             for tool_call in tool_calls:
@@ -130,7 +140,6 @@ def run_conversation(user_input: str) -> str:
                 response_message.raise_for_status()
                 response_message = response_message.json()["choices"][0]["message"]
 
-
         return response_message["content"]
 
 
@@ -144,5 +153,7 @@ if __name__ == "__main__":
         currency = args[0]
 
     print(f"Getting exchange rate for {currency}")
-    response_message = run_conversation(f"What is the current exchange rate of {currency}?")
+    response_message = run_conversation(
+        f"What is the current exchange rate of {currency}?"
+    )
     print(response_message)

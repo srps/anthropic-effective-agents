@@ -12,23 +12,28 @@ load_dotenv()
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 
+
 # Define data models
 class Document(BaseModel):
     title: str
     content: str
 
+
 class DocumentSection(BaseModel):
     title: str
     content: str
+
 
 class DocumentOutline(BaseModel):
     title: str
     sections: list[DocumentSection]
 
+
 class Query(BaseModel):
     original_query: str
     enhanced_query: str
     is_document: bool
+
 
 # Set API key and model details
 api_key = os.environ.get("GROQ_API_KEY")
@@ -40,6 +45,7 @@ headers: HeaderTypes = {
     "Content-Type": "application/json",
     "Authorization": f"Bearer {api_key}",
 }
+
 
 def rewrite_user_prompt(user_prompt: str) -> Query:
     """
@@ -71,12 +77,12 @@ def rewrite_user_prompt(user_prompt: str) -> Query:
                     "Enhanced query: ''\n"
                     "is_document: False\n"
                     f"The JSON must adhere to the schema {Query.model_json_schema()}"
-                )
+                ),
             },
             {
                 "role": "user",
-                "content": f"Rewrite the user prompt {user_prompt} to make it clearer to the model."
-            }
+                "content": f"Rewrite the user prompt {user_prompt} to make it clearer to the model.",
+            },
         ],
         "temperature": 0.6,
         "response_format": {"type": "json_object"},
@@ -89,6 +95,7 @@ def rewrite_user_prompt(user_prompt: str) -> Query:
 
     response_message = response.json()["choices"][0]["message"]["content"]
     return Query.model_validate_json(response_message)
+
 
 def plan_document(query: str) -> DocumentOutline:
     """
@@ -103,12 +110,12 @@ def plan_document(query: str) -> DocumentOutline:
                 "content": (
                     "You are a document planner that outputs document outlines in JSON format.\n"
                     f"The JSON must adhere to the schema {DocumentOutline.model_json_schema()}"
-                )
+                ),
             },
             {
                 "role": "user",
-                "content": f"Plan a document based on the following query: {query}"
-            }
+                "content": f"Plan a document based on the following query: {query}",
+            },
         ],
         "temperature": 0.6,
         "response_format": {"type": "json_object"},
@@ -121,6 +128,7 @@ def plan_document(query: str) -> DocumentOutline:
 
     response_message = response.json()["choices"][0]["message"]["content"]
     return DocumentOutline.model_validate_json(response_message)
+
 
 def write_document(outline: DocumentOutline) -> Document:
     """
@@ -139,12 +147,12 @@ def write_document(outline: DocumentOutline) -> Document:
                     "content": (
                         "You are a document writer that outputs documents in Markdown format.\n"
                         f"The JSON must adhere to the schema {Document.model_json_schema()}"
-                    )
+                    ),
                 },
                 {
                     "role": "user",
-                    "content": f"Write the document outlined in the following markdown format:\n\n{outline.title}\n\n{outline.sections}"
-                }
+                    "content": f"Write the document outlined in the following markdown format:\n\n{outline.title}\n\n{outline.sections}",
+                },
             ],
             "temperature": 0.6,
             "response_format": {"type": "json_object"},
@@ -163,20 +171,25 @@ def write_document(outline: DocumentOutline) -> Document:
             logging.info("Retrying...")
             continue
 
+
 def display_markdown(markdown: str):
     """
     Display the given markdown content using rich library.
     """
     from rich.markdown import Markdown
     from rich.console import Console
+
     console = Console()
     console.print(Markdown(markdown))
+
 
 if __name__ == "__main__":
     args = sys.argv[1:]
     if len(args) != 1:
         print("Usage: python prompt-chaining.py <user_prompt>")
-        print("Running with default user prompt: Write a blog post about the benefits of effective agents.")
+        print(
+            "Running with default user prompt: Write a blog post about the benefits of effective agents."
+        )
         user_prompt = "Write a blog post about the benefits of effective agents."
     else:
         user_prompt = args[0]

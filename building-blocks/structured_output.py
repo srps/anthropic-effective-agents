@@ -7,15 +7,18 @@ from pydantic import BaseModel
 
 load_dotenv()
 
+
 class Ingredient(BaseModel):
     name: str
     quantity: str
     quantity_unit: Optional[str]
 
+
 class Recipe(BaseModel):
     recipe_name: str
     ingredients: List[Ingredient]
     directions: List[str]
+
 
 api_key = os.environ.get("GROQ_API_KEY")
 model = "deepseek-r1-distill-llama-70b"
@@ -26,18 +29,17 @@ headers: HeaderTypes = {
     "Authorization": f"Bearer {api_key}",
 }
 
-def get_recipe(recipe_name: str) -> Recipe:
 
+def get_recipe(recipe_name: str) -> Recipe:
     data: RequestData = {
         "model": f"{model}",
         "messages": [
             {
-                "role": "system", "content": "You are a recipe generator that outputs recipes in JSON format.\n"
-                f" The JSON must adhere to the schema {Recipe.model_json_schema()}"
+                "role": "system",
+                "content": "You are a recipe generator that outputs recipes in JSON format.\n"
+                f" The JSON must adhere to the schema {Recipe.model_json_schema()}",
             },
-            {
-                "role": "user", "content": f"Generate a recipe for {recipe_name}."
-            }
+            {"role": "user", "content": f"Generate a recipe for {recipe_name}."},
         ],
         "temperature": 0.6,
         "response_format": {"type": "json_object"},
@@ -49,7 +51,8 @@ def get_recipe(recipe_name: str) -> Recipe:
     response.raise_for_status()
 
     response_message = response.json()["choices"][0]["message"]["content"]
-    return  Recipe.model_validate_json(response_message)
+    return Recipe.model_validate_json(response_message)
+
 
 def print_recipe(recipe: Recipe):
     print(f"Recipe for {recipe.recipe_name}:")
@@ -60,7 +63,8 @@ def print_recipe(recipe: Recipe):
     print()
     print("Directions:")
     for i, direction in enumerate(recipe.directions):
-        print(f"{i+1}. {direction}")
+        print(f"{i + 1}. {direction}")
+
 
 recipe = get_recipe("chicken parmesan")
 print_recipe(recipe)

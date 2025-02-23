@@ -17,8 +17,13 @@ headers: HeaderTypes = {
 }
 
 data: RequestData = {
-    "model": "deepseek-r1-distill-llama-70b", # These Deepseek R1 distilled models are interesting
-    "messages": [{"role": "user", "content": "What are the basics of building effective AI agents?"}],
+    "model": "deepseek-r1-distill-llama-70b",  # These Deepseek R1 distilled models are interesting
+    "messages": [
+        {
+            "role": "user",
+            "content": "What are the basics of building effective AI agents?",
+        }
+    ],
     "temperature": 0.6,
 }
 
